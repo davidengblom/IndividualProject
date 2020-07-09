@@ -9,7 +9,7 @@ public class HUDScript : MonoBehaviour
     public Text levelText;
     public Slider hpSlider;
     
-    public void SetHUD(Unit unit)
+    public void SetHUD(Unit unit) //Sets the unit information
     {
         nameText.text = unit.unitName;
         levelText.text = "Level " + unit.unitLevel;
@@ -17,7 +17,7 @@ public class HUDScript : MonoBehaviour
         hpSlider.value = unit.currentHP;
     }
 
-    public void SetHP(int hp)
+    public void SetHP(int hp) //Update HP function
     {
         hpSlider.value = hp;
     }

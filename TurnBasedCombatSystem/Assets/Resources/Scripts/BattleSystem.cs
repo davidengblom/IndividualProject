@@ -27,6 +27,8 @@ public class BattleSystem : MonoBehaviour
 
     public Button attackButton;
     public Button spellButton;
+    public GameObject spellButtons;
+    public GameObject buttons;
 
     public int waitTime = 2;
 
@@ -60,6 +62,7 @@ public class BattleSystem : MonoBehaviour
     void PlayerTurn()
     {
         uIText.text = "Choose an action..";
+        buttons.SetActive(true);
         attackButton.interactable = true; //Bundle these together plz
         spellButton.interactable = true;  //^
     }
@@ -68,6 +71,10 @@ public class BattleSystem : MonoBehaviour
     {
         attackButton.interactable = false; //Bundle these together plz
         spellButton.interactable = false;  //^
+
+        uIText.text = playerUnit.unitName + " attacks!";
+
+        yield return new WaitForSeconds(waitTime);
 
         float ranNumber = Random.Range(1, 100);
 
@@ -119,9 +126,9 @@ public class BattleSystem : MonoBehaviour
         float ranNumber = Random.Range(1, 100);
         if (ranNumber < enemyUnit.hitChance) //Check if the attack hit
         {
-            if (ranNumber < enemyUnit.critChance)//If attack hit, check if it was critical
+            if (ranNumber < enemyUnit.critChance) //If attack hit, check if it was critical
             {
-                enemyUnit.shakeIntensity = 0.7f;
+                playerUnit.shakeIntensity = 0.7f;
                 isDead = playerUnit.TakeDamage(enemyUnit.damage * 2); //Crit = Do double damage
                 uIText.text = "Critical Hit!";
                 playerUnit.Shake();
@@ -180,5 +187,19 @@ public class BattleSystem : MonoBehaviour
     void EnemyAI() //Ability to make small decisions based on values on the player (HP etc)
     {
         //Insert good intelligence here plz
+    }
+
+    public void SpellMenu()
+    {
+        buttons.SetActive(false);
+        spellButtons.SetActive(true);
+
+        
+    }
+
+    public void BackOutOfSpellMenu()
+    {
+        spellButtons.SetActive(false);
+        buttons.SetActive(true);
     }
 }
