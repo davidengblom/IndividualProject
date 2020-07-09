@@ -22,7 +22,7 @@ public class Unit : MonoBehaviour
 
     void Update()
     { 
-        if (tempShakeIntensity > 0)
+        if (tempShakeIntensity > 0) //Shake logic @courtesy https://gist.github.com/GuilleUCM/d882e228d93c7f7d0820
         {
             transform.position = originPosition + Random.insideUnitSphere * tempShakeIntensity;
             transform.rotation = new Quaternion(
@@ -34,7 +34,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public bool TakeDamage(int damage)
+    public bool TakeDamage(int damage) 
     {
         currentHP -= damage;
         
@@ -48,7 +48,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void Shake()
+    public void Shake() //Call when you need to shake
     {
         originPosition = transform.position;
         originRotation = transform.rotation;
