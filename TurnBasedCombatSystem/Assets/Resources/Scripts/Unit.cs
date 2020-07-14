@@ -20,6 +20,8 @@ public class Unit : MonoBehaviour
 
     private float tempShakeIntensity = 0;
 
+    public bool frozen = false;
+
     void Update()
     { 
         if (tempShakeIntensity > 0) //Shake logic @courtesy https://gist.github.com/GuilleUCM/d882e228d93c7f7d0820
@@ -31,6 +33,18 @@ public class Unit : MonoBehaviour
                 originRotation.z + Random.Range(-tempShakeIntensity, tempShakeIntensity) * 0.2f,
                 originRotation.w + Random.Range(-tempShakeIntensity, tempShakeIntensity) * 0.2f);
             tempShakeIntensity -= shakeDecay;
+        }
+    }
+
+    public void Frozen()
+    {
+        if(!frozen)
+        {
+            GetComponentInChildren<SpriteRenderer>().color = Color.blue;
+        }
+        else
+        {
+            GetComponentInChildren<SpriteRenderer>().color = Color.white;
         }
     }
 
