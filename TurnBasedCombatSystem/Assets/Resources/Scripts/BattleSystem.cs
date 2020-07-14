@@ -27,10 +27,19 @@ public class BattleSystem : MonoBehaviour
 
     public Button attackButton;
     public Button spellButton;
+    public Button spell1;
+    public Button spell2;
+    public Button backButton;
+
     public GameObject spellButtons;
     public GameObject buttons;
 
+    public GameObject freezeSpell;
+
     public int waitTime = 2;
+
+    public int cooldownTurns = 0;
+    public int spellCooldown = 0; //Make this value modular for all spells instead of just one
 
     private bool isDead;
 
@@ -40,7 +49,7 @@ public class BattleSystem : MonoBehaviour
         StartCoroutine(BattleSetup());
     }
 
-    private IEnumerator BattleSetup()
+    private IEnumerator BattleSetup() //Setup the battle. All information about player and opponent. Start player Turn.
     {
         GameObject player = Instantiate(playerPrefab, playerStation); //Spawn in the player at the playerStation
         playerUnit = player.GetComponent<Unit>();
@@ -65,6 +74,15 @@ public class BattleSystem : MonoBehaviour
         buttons.SetActive(true);
         attackButton.interactable = true; //Bundle these together plz
         spellButton.interactable = true;  //^
+        if(spellCooldown > 0) //If there is still a cooldown
+        {
+            spellCooldown--;
+            spell2.interactable = false;
+        }
+        else //If it comes of cooldown
+        {
+            spell2.interactable = true;
+        }
     }
 
     private IEnumerator PlayerAttack()
@@ -121,31 +139,47 @@ public class BattleSystem : MonoBehaviour
     {
         uIText.text = enemyUnit.unitName + " attacks!";
 
+        if (cooldownTurns <= 0) //If the enemy has been waiting for the right amount of turns
+        {
+            enemyUnit.frozen = false;
+            enemyUnit.GetComponentInChildren<SpriteRenderer>().color = Color.white;
+        }
+
         yield return new WaitForSeconds(waitTime);
-
         float ranNumber = Random.Range(1, 100);
-        if (ranNumber < enemyUnit.hitChance) //Check if the attack hit
-        {
-            if (ranNumber < enemyUnit.critChance) //If attack hit, check if it was critical
-            {
-                playerUnit.shakeIntensity = 0.7f;
-                isDead = playerUnit.TakeDamage(enemyUnit.damage * 2); //Crit = Do double damage
-                uIText.text = "Critical Hit!";
-                playerUnit.Shake();
-            }
-            else
-            {
-                playerUnit.shakeIntensity = 0.3f;
-                isDead = playerUnit.TakeDamage(enemyUnit.damage);
-                uIText.text = "Attack Successful!";
-                playerUnit.Shake();
-            }
-        }
-        else //If the attack missed
-        {
-            uIText.text = "Attack Missed!";
-        }
 
+        if(!enemyUnit.frozen && cooldownTurns <= 0)
+        {
+            if (ranNumber < enemyUnit.hitChance) //Check if the attack hit
+            {
+                if (ranNumber < enemyUnit.critChance) //If attack hit, check if it was critical
+                {
+                    playerUnit.shakeIntensity = 0.7f;
+                    isDead = playerUnit.TakeDamage(enemyUnit.damage * 2); //Crit = Do double damage
+                    uIText.text = "Critical Hit!";
+                    playerUnit.Shake();
+                }
+                else
+                {
+                    playerUnit.shakeIntensity = 0.3f;
+                    isDead = playerUnit.TakeDamage(enemyUnit.damage);
+                    uIText.text = "Attack Successful!";
+                    playerUnit.Shake();
+                }
+            }
+            else //If the attack missed
+            {
+                uIText.text = "Attack Missed!";
+            }
+        }
+        else
+        {
+            uIText.text = enemyUnit.unitName + " is frozen!";
+            if(cooldownTurns != 0)
+            {
+                cooldownTurns--;
+            }
+        }
         playerHUD.SetHP(playerUnit.currentHP); //Update the player's HP
 
         yield return new WaitForSeconds(waitTime);
@@ -174,7 +208,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    public void Attack()
+    public void Attack() //Called when you click the Attack button
     {
         if(state != BattleState.PlayerTurn)
         {
@@ -184,17 +218,59 @@ public class BattleSystem : MonoBehaviour
         StartCoroutine(PlayerAttack());
     }
 
+    public void Spell2() //Maybe make a seperate script that handles spells
+    {
+        if(state != BattleState.PlayerTurn)
+        {
+            return;
+        }
+
+        StartCoroutine(FreezeSpell());
+    }
+
+    IEnumerator FreezeSpell() //Maybe make a seperate script that handles spells
+    {
+        spell1.interactable = false;     //
+        spell2.interactable = false;     //Bundles these together somehow
+        backButton.interactable = false; //
+
+        uIText.text = playerUnit.unitName + " uses Freeze!";
+
+        yield return new WaitForSeconds(waitTime);
+
+        float ranNumber = Random.Range(1, 100);
+
+        if (ranNumber < playerUnit.hitChance) //Check if the attack hit
+        {
+            GameObject freeze = Instantiate(freezeSpell, enemyUnit.transform);
+
+            yield return new WaitForSeconds(waitTime);
+
+            enemyUnit.Frozen();
+            Destroy(freeze);
+            cooldownTurns = 1;                //Make this number editable through inspector
+            spellCooldown = 2;                //Make this number editable through inspector and make it match the number of rounds
+        }
+
+        spellButtons.SetActive(false);        //
+        buttons.SetActive(true);              //
+        attackButton.interactable = false;    //
+        spellButton.interactable = false;     //Bundle these together somehow
+        spell1.interactable = true;           //
+        spell2.interactable = true;           //
+        backButton.interactable = true;       //
+        StartCoroutine(EnemyTurn());
+    }
+
     void EnemyAI() //Ability to make small decisions based on values on the player (HP etc)
     {
-        //Insert good intelligence here plz
+        //Be able to choose which ability to use depending on values
     }
 
     public void SpellMenu()
     {
         buttons.SetActive(false);
         spellButtons.SetActive(true);
-
-        
     }
 
     public void BackOutOfSpellMenu()
