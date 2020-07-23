@@ -125,8 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ee0bef064970d479745e7406c6d0f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitName: Chad
-  unitLevel: 99
+  unitName: Maksym
+  unitLevel: 18
   damage: 12
   maxHP: 200
   currentHP: 200
@@ -134,3 +134,4 @@ MonoBehaviour:
   hitChance: 75
   shakeDecay: 0.002
   shakeIntensity: 0.3
+  frozen: 0

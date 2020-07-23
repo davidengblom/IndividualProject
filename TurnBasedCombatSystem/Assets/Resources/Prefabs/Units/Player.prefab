@@ -131,6 +131,7 @@ MonoBehaviour:
   maxHP: 200
   currentHP: 200
   critChance: 25
-  hitChance: 75
+  hitChance: 100
   shakeDecay: 0.002
   shakeIntensity: 0.3
+  frozen: 0

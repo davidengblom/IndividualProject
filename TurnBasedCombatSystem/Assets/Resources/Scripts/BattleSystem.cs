@@ -17,8 +17,8 @@ public class BattleSystem : MonoBehaviour
     public Transform playerStation;
     public Transform enemyStation;
 
-    private Unit playerUnit;
-    private Unit enemyUnit;
+    public Unit playerUnit;
+    public Unit enemyUnit;
 
     public Text uIText;
 
@@ -41,10 +41,18 @@ public class BattleSystem : MonoBehaviour
     public int cooldownTurns = 0;
     public int spellCooldown = 0; //Make this value modular for all spells instead of just one
 
+    public float ranNumber;
+
     private bool isDead;
+
+    public Button[] spellButtonArray;
+    public Button[] defaultButtonArray;
 
     void Start()
     {
+        ranNumber = Random.Range(1, 100);
+        spellButtonArray = spellButtons.GetComponentsInChildren<Button>();
+        defaultButtonArray = buttons.GetComponentsInChildren<Button>();
         state = BattleState.Start;
         StartCoroutine(BattleSetup());
     }
@@ -135,7 +143,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    IEnumerator EnemyTurn()
+    public IEnumerator EnemyTurn()
     {
         uIText.text = enemyUnit.unitName + " attacks!";
 
@@ -237,8 +245,6 @@ public class BattleSystem : MonoBehaviour
         uIText.text = playerUnit.unitName + " uses Freeze!";
 
         yield return new WaitForSeconds(waitTime);
-
-        float ranNumber = Random.Range(1, 100);
 
         if (ranNumber < playerUnit.hitChance) //Check if the attack hit
         {
